@@ -1,4 +1,4 @@
-var — = new Proxy({}, {
+var member = new Proxy({}, {
   get: function(target, name) {
     if (!(name in target)) {
       if (remember.get(name) !== null) {
