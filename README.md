@@ -2,7 +2,8 @@
 
 A Javascript library that offers simple storage and retrieval of data within a browser. Built for DVLA to aid GOV.UK prototyping.
 
-> “It ‘members things, so you don’t have to.” – A purple berry
+> “It ‘members things, so you don’t have to.”
+> – <cite>A purple berry</cite>
 
 ## Building a prototype that needs to carry data between webpages?
 
