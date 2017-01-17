@@ -70,3 +70,17 @@ member.users.push(
 console.log(member.users);
 //{'liam': {'gender': 'M','age': 26,'admin': true}, 'wayne': {'gender': 'M','age': 34,'admin' false}};
 ```
+
+## Examples
+
+### Store a value from a text input field (using jQuery)
+
+```
+member.typeOfSale = $('#saleType').val();
+```
+
+### Retrieve a stored value and output to a div (using jQuery)
+
+```
+$('#saleType').html(member.typeOfSale);
+```
