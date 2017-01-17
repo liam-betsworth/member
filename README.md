@@ -76,11 +76,23 @@ console.log(member.users);
 ### Store a value from a text input field (using jQuery)
 
 ```
-member.typeOfSale = $('#saleType').val();
+<html>
+  <input type="text" id="saleType" />
+</html>
+
+<script>
+  member.typeOfSale = $('#saleType').val();
+</script>
 ```
 
-### Retrieve a stored value and output to a div (using jQuery)
+### Retrieve a stored value and output to a span (using jQuery)
 
 ```
-$('#saleType').html(member.typeOfSale);
+<html>
+  <span id="saleType"></span>
+</html>
+
+<script>
+  $('#saleType').html(member.typeOfSale);
+</script>
 ```
