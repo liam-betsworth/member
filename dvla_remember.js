@@ -1,70 +1,4 @@
-var member = new Proxy({}, {
-  get: function(target, name) {
-    if (!(name in target)) {
-      if (remember.get(name) !== null) {
-        member[name] = remember.get(name);
-        return remember.get(name);
-      } else {
-        return undefined; 
-      }
-    }
-    return target[name];
-  },
-  set: function(target, name, value) {
-    target[name] = value;
-    remember.set(name, value);
-    return true;
-  }
-});
-
 var remember = (function() {  
-  /**
-* Whether the current browser supports local storage as a way of storing data
-* @var {Boolean}
-*/
-  var _hasLocalStorageSupport = (function() {
-    try {
-      return 'localStorage' in window && window['localStorage'] !== null;
-    } catch (e) {
-      return false;
-    }
-  })();
-
-  /**
-* @param {String} name The name of the property to read from this document's cookies
-* @return {?String} The specified cookie property's value (or null if it has not been set)
-*/
-  var _readCookie = function(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-
-    return null;
-  };
-
-  /**
-* @param {String} name The name of the property to set by writing to a cookie
-* @param {String} value The value to use when setting the specified property
-* @param {int} [days] The number of days until the storage of this item expires
-*/
-  var _writeCookie = function(name, value, days) {
-    var expiration = (function() {
-      if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
-        return "; expires=" + date.toGMTString();
-      }
-      else {
-        return "";
-      }
-    })();
-
-    document.cookie = name + "=" + value + expiration + "; path=/";
-  };
 
   return {
     /**
@@ -72,11 +6,10 @@ var remember = (function() {
 * @param {Object} value The value to use when setting the specified property
 * @param {int} [days] The number of days until the storage of this item expires (if storage of the provided item must fallback to using cookies)
 */
-    set: function(name, value, days) {
+    set: function(name, value) {
       if (value instanceof Object) value = JSON.stringify(value);
       
-      _hasLocalStorageSupport
-        ? localStorage.setItem(name, value) : _writeCookie(name, value, days);
+      localStorage.setItem(name, value);
     },
 
     /**
@@ -84,8 +17,7 @@ var remember = (function() {
 * @return {?Object} The stored value
 */
     get: function(name) {
-      var value = _hasLocalStorageSupport
-        ? localStorage.getItem(name) : _readCookie(name);
+      var value = localStorage.getItem(name);
       
       try {
         value = JSON.parse(value);
@@ -94,13 +26,82 @@ var remember = (function() {
         return value;
       }
     },
+    
+    setup: function() {
+      var x = {}
+      for (prop in localStorage) {
+        let value = '';
+        
+        try {
+          value = JSON.parse(localStorage[prop]);
+        } catch (err) {
+          value = localStorage[prop];
+        }
+        
+        x[prop] = value;
+        //remember.set(prop, localStorage[prop]);
+      }
+      
+      x.clear = function() {
+        localStorage.clear();
+        member = new Proxy(remember.setup(), remember.validator);
+        return true;
+      };
+      
+      return x;
+    },
+    
+    clear: function() {
+      localStorage.clear(); 
+    },
+    
+    validator: {
+      get: function(target, key) {
 
-    /**
-* @param {String} name The name of the value to delete/remove from storage
-*/
-    remove: function(name) {
-      _hasLocalStorageSupport
-        ? localStorage.removeItem(name) : this.set(name, "", -1);
+        if (!(key in target)) {
+          if (remember.get(key) !== null) {
+            target[key] = remember.get(key);
+            if (typeof target[key] === 'object' && target[key] !== null) {
+              return new Proxy(target[key], remember.validator)
+            } else {
+              return target[key];
+            }
+          } else {
+            return undefined; 
+          }
+        }
+
+        if (typeof target[key] === 'object' && target[key] !== null) {
+          return new Proxy(target[key], remember.validator)
+        } else {
+          return target[key];
+        }
+      },
+      set: function(target, name, value) {
+        target[name] = value;
+        // TODO: Need mass conversion of member instead of single value
+        remember.clear();
+
+        for (prop in member) {
+          remember.set(prop, member[prop]);
+        }
+
+        return true;
+      },
+      deleteProperty: function(target, prop) {
+        delete target[prop];
+        // TODO: Reculculate local storage
+        remember.clear();
+
+        for (prop in member) {
+          remember.set(prop, member[prop]);
+        }
+
+        return true;
+      }
     }
+    
   };
 })();
+
+var member = new Proxy(remember.setup(), remember.validator);
