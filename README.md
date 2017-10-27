@@ -1,6 +1,6 @@
-# dvla_remember
+# member.js
 
-A Javascript library that offers simple storage and retrieval of data within a browser. Built for DVLA to aid GOV.UK prototyping.
+A Javascript library that offers simple storage and retrieval of data within a browser. It builds on localstorage, allowing you to store native Javascript objects.
 
 > “It ‘members things, so you don’t have to.”
 > – <cite>A purple berry</cite>

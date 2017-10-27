@@ -1,0 +1,22 @@
+{
+  "name": "member.js",
+  "version": "1.0.0",
+  "description": "Javascript library that offers data persistence between frontend pages. Builds on localstorage to store Javascript objects",
+  "main": "member.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liam-betsworth/member.git"
+  },
+  "keywords": [
+    "localstorage"
+  ],
+  "author": "Liam Betsworth",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liam-betsworth/member/issues"
+  },
+  "homepage": "https://github.com/liam-betsworth/member#readme"
+}
